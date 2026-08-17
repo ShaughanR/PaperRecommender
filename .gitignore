@@ -1,0 +1,14 @@
+# Virtual environment
+.venv/
+
+# Python generated files
+__pycache__/
+*.pyc
+
+# Secrets
+sensitive_info.py
+.env
+.env.*
+
+# PyCharm files
+.idea/
