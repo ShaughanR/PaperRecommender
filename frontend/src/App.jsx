@@ -1,24 +1,20 @@
-import { useEffect, useState } from 'react'
+import './App.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Home from './pages/Home'
+import SearchResults from './pages/SearchResults'
+import HomeButton from './components/HomeButton'
+
+
 
 function App() {
-  const [status, setStatus] = useState('Connecting...')
-
-  useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/health')
-      .then(response => response.json())
-      .then(data => {
-        setStatus(data.status)
-      })
-      .catch(() => {
-        setStatus('Backend connection failed')
-      })
-  }, [])
-
   return (
-    <div>
-      <h1>Paper Recommender</h1>
-      <p>Backend status: {status}</p>
-    </div>
+    <BrowserRouter>
+        <HomeButton />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/search" element={<SearchResults />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 

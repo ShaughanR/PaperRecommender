@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 from datetime import datetime
 
 
@@ -11,4 +11,4 @@ class Paper(BaseModel):
     updated_at: datetime
     doi: str | None
     categories: list[str]
-    pdf_url: str
+    pdf_url: str | None

@@ -1,6 +1,6 @@
 import psycopg
-from sensitive_info import password
-from models import Paper
+from backend.sensitive_info import password
+from backend.models import Paper
 def get_connection():
     return psycopg.connect(
         host="localhost",
@@ -9,6 +9,15 @@ def get_connection():
         user="postgres",
         password=password
     )
+
+def get_db():
+    connection = get_connection()
+
+    try:
+        with connection.cursor() as cur:
+            yield cur
+    finally:
+        connection.close()
 
 def insert_paper(cur, paper):
     cur.execute(
@@ -188,9 +197,34 @@ def get_paper_multiple(cur, limit):
     return [build_paper(cur, row) for row in cur.fetchall()]
 
 
-def get_paper_queried_multiple(cur, query):
-    cur.execute(
-        """
+def get_paper_queried_multiple(
+        cur,
+        query=None,
+        published_after=None,
+        published_before=None,
+        limit=20):
+
+    conditions = []
+    params = []
+
+    if query:
+        conditions.append(
+            "(title ILIKE %s OR abstract ILIKE %s)"
+        )
+        params.extend([
+            f"%{query}%",
+            f"%{query}%"
+        ])
+
+    if published_after:
+        conditions.append("publish_datetime >= %s")
+        params.append(published_after)
+
+    if published_before:
+        conditions.append("publish_datetime <= %s")
+        params.append(published_before)
+
+    sql = """
         SELECT
             paper_id,
             title,
@@ -200,17 +234,18 @@ def get_paper_queried_multiple(cur, query):
             pdf_url,
             abstract
         FROM papers
-        WHERE title ILIKE %s
-           OR abstract ILIKE %s
-        """,
-        (f"%{query}%", f"%{query}%")
-    )
+    """
 
-    paper_rows = cur.fetchall()
-    papers = []
-    for paper_row in paper_rows:
-        papers.append(build_paper(cur, paper_row))
-    return papers
+    if conditions:
+        sql += " WHERE " + " AND ".join(conditions)
+
+    sql += " ORDER BY publish_datetime DESC LIMIT %s"
+    params.append(limit)
+
+    cur.execute(sql, params)
+
+    return [build_paper(cur, row) for row in cur.fetchall()]
+
 
 def build_paper(cur, paper_row):
     paper_id = paper_row[0]

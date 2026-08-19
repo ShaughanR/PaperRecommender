@@ -6,7 +6,7 @@ __pycache__/
 *.pyc
 
 # Secrets
-sensitive_info.py
+backend/sensitive_info.py
 .env
 .env.*
 
