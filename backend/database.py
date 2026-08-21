@@ -1,5 +1,5 @@
 import psycopg
-from backend.sensitive_info import password
+from backend.sensitive_info import postgre_password
 from backend.models import Paper
 def get_connection():
     return psycopg.connect(
@@ -7,7 +7,7 @@ def get_connection():
         port=5432,
         dbname="arXiv_data",
         user="postgres",
-        password=password
+        password=postgre_password
     )
 
 def get_db():
@@ -16,6 +16,10 @@ def get_db():
     try:
         with connection.cursor() as cur:
             yield cur
+        connection.commit()
+    except Exception:
+        connection.rollback()
+        raise
     finally:
         connection.close()
 
@@ -413,3 +417,68 @@ def get_user_paper_interactions(cur, user_id):
     )
 
     return cur.fetchall()
+
+
+########################################################
+##################recommendation stuff##################
+########################################################
+
+
+def get_user_interaction_categories(cur, user_id):
+    cur.execute(
+        """
+        SELECT
+            upi.interaction_type,
+            c.category_name
+        FROM user_paper_interactions upi
+        JOIN paper_category pc
+            ON upi.paper_id = pc.paper_id
+        JOIN categories c
+            ON pc.category_id = c.category_id
+        WHERE upi.user_id = %s
+        """,
+        (user_id,)
+    )
+
+    return cur.fetchall()
+
+
+def get_recommendation_candidates(cur, user_id):
+    cur.execute(
+        """
+        SELECT DISTINCT
+            p.paper_id,
+            p.title,
+            p.abstract,
+            p.publish_datetime,
+            p.update_datetime,
+            p.doi,
+            p.pdf_url
+        FROM papers p
+        JOIN paper_category pc
+            ON p.paper_id = pc.paper_id
+        WHERE p.paper_id NOT IN (
+            SELECT paper_id
+            FROM user_paper_interactions
+            WHERE user_id = %s
+        )
+        """,
+        (user_id,)
+    )
+
+    return cur.fetchall()
+
+
+def get_paper_categories(cur, paper_id):
+    cur.execute(
+        """
+        SELECT c.category_name
+        FROM categories c
+        JOIN paper_category pc
+            ON c.category_id = pc.category_id
+        WHERE pc.paper_id = %s
+        """,
+        (paper_id,)
+    )
+
+    return [row[0] for row in cur.fetchall()]
