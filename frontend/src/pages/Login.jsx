@@ -15,7 +15,7 @@ function Login() {
 
         try {
             const response = await fetch(
-                "http://127.0.0.1:8002/api/auth/login",
+                "http://127.0.0.1:8003/api/auth/login",
                 {
                     method: "POST",
                     headers: {
@@ -48,34 +48,50 @@ function Login() {
     };
 
     return (
-        <div>
-            <h1>Login</h1>
+        <div className="auth-page">
 
-            <form onSubmit={handleLogin}>
-                <input
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(event) => setUsername(event.target.value)}
-                />
+            <div className="auth-card">
 
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(event) => setPassword(event.target.value)}
-                />
+                <h1>Login</h1>
 
-                <button type="submit">
-                    Login
+                <form
+                    className="auth-form"
+                    onSubmit={handleLogin}
+                >
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(event) => setUsername(event.target.value)}
+                    />
+
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(event) => setPassword(event.target.value)}
+                    />
+
+                    <button type="submit">
+                        Login
+                    </button>
+                </form>
+
+                {error && (
+                    <p className="auth-error">
+                        {error}
+                    </p>
+                )}
+
+                <button
+                    className="auth-secondary-button"
+                    onClick={() => navigate("/register")}
+                >
+                    Create an Account
                 </button>
-            </form>
 
-            {error && <p>{error}</p>}
+            </div>
 
-            <button onClick={() => navigate("/register")}>
-                Create an Account
-            </button>
         </div>
     );
 }

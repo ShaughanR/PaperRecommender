@@ -1,4 +1,5 @@
 import { recordInteraction } from "../api";
+import "../PaperCard.css";
 
 function PaperCard({ paper }) {
 
@@ -8,8 +9,7 @@ function PaperCard({ paper }) {
         paper.arxiv_id,
         interactionType
       );
-    }
-    catch (error) {
+    } catch (error) {
       console.error("Failed to record interaction:", error);
     }
   };
@@ -20,8 +20,7 @@ function PaperCard({ paper }) {
         paper.arxiv_id,
         "pdf_opened"
       );
-    }
-    catch (error) {
+    } catch (error) {
       console.error("Failed to record PDF interaction:", error);
     }
 
@@ -29,42 +28,81 @@ function PaperCard({ paper }) {
   };
 
   return (
-    <div className="paper-card">
-      <h2>{paper.title}</h2>
+    <article className="paper-card">
 
-      <p>
-        <strong>Authors:</strong>{' '}
-        {paper.authors.join(', ')}
-      </p>
+      <div className="paper-card-header">
+        <h2 className="paper-title">
+          {paper.title}
+        </h2>
 
-      <p>
-        <strong>Categories:</strong>{' '}
-        {paper.categories.join(', ')}
-      </p>
+        <p className="paper-authors">
+          {paper.authors.join(", ")}
+        </p>
+      </div>
 
-      <p>
-        <strong>Abstract:</strong>{' '}
-        {paper.abstract}
-      </p>
+      <div className="paper-metadata">
 
-      <div>
-        <button onClick={() => handleInteraction("liked")}>
-          👍
-        </button>
+        {paper.published_at && (
+          <span>
+            Published:{" "}
+            {new Date(paper.published_at).toLocaleDateString()}
+          </span>
+        )}
 
-        <button onClick={() => handleInteraction("disliked")}>
-          👎
-        </button>
+        <div className="paper-categories">
+          {paper.categories.map((category) => (
+            <span
+              key={category}
+              className="paper-category"
+            >
+              {category}
+            </span>
+          ))}
+        </div>
 
-        <button onClick={() => handleInteraction("saved")}>
-          Save
-        </button>
+      </div>
 
-        <button onClick={handlePdfOpen}>
+      <div className="paper-abstract">
+        <h3>Abstract</h3>
+        <p>{paper.abstract}</p>
+      </div>
+
+      <div className="paper-actions">
+
+        <div className="interaction-buttons">
+
+          <button
+            onClick={() => handleInteraction("liked")}
+            aria-label="Like paper"
+          >
+            👍
+          </button>
+
+          <button
+            onClick={() => handleInteraction("disliked")}
+            aria-label="Dislike paper"
+          >
+            👎
+          </button>
+
+          <button
+            onClick={() => handleInteraction("saved")}
+          >
+            Save
+          </button>
+
+        </div>
+
+        <button
+          className="pdf-button"
+          onClick={handlePdfOpen}
+        >
           Open PDF
         </button>
+
       </div>
-    </div>
+
+    </article>
   );
 }
 

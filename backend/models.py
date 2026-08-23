@@ -13,6 +13,10 @@ class Paper(BaseModel):
     categories: list[str]
     pdf_url: str | None
 
+class PaperSearchResponse(BaseModel):
+    papers: list[Paper]
+    next_arxiv_start: int
+
 
 class CreateUserRequest(BaseModel):
     username: str

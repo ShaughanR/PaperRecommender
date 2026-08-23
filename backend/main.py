@@ -1,13 +1,29 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Query
 from psycopg.errors import UniqueViolation
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend import (
+    database,
+    authentication,
+    users,
+    arxiv_connector,
+    paper_search
+)
 
-from backend import database, authentication, users
-from backend.models import Paper, CreateUserRequest, UserCreate, UserLogin, Token, UserInteraction, UserCategory
+from backend.models import (
+    Paper,
+    CreateUserRequest,
+    UserCreate,
+    UserLogin,
+    Token,
+    UserInteraction,
+    UserCategory,
+    PaperSearchResponse
+)
 
 
 app = FastAPI()
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,30 +41,70 @@ app.add_middleware(
 def health_check():
     return {"status": "ok"}
 
-####paper stuff#####
+@app.get("/api/test-version")
+def test_version():
+    return {
+        "version": "page-size-search-v2"
+    }
+
+################################################
+################## paper stuff #################
+################################################
+
+
 @app.get("/api/papers", response_model=list[Paper])
-def get_papers(limit: int = 20, cur=Depends(database.get_db)):
-    return database.get_paper_multiple(cur, limit)
+def get_papers(
+    limit: int = 20,
+    cur=Depends(database.get_db)
+):
+    return database.get_paper_multiple(
+        cur,
+        limit
+    )
 
 
-@app.get("/api/papers/search", response_model=list[Paper])
+@app.get("/api/papers/search", response_model=PaperSearchResponse)
 def search_papers(
     query: str | None = None,
     published_after: str | None = None,
     published_before: str | None = None,
-    limit: int = 20,
+    page_size: int = 20,
+    excluded_paper_ids: list[str] = Query(default=[]),
+    arxiv_start: int = 0,
+    cur=Depends(database.get_db)
+
+):
+    print(
+        f"SEARCH ENDPOINT: query={query}, page_size={page_size}"
+    )
+    return paper_search.search_papers(
+        cur=cur,
+        query=query,
+        published_after=published_after,
+        published_before=published_before,
+        page_size=page_size,
+        excluded_paper_ids=excluded_paper_ids,
+        arxiv_start=arxiv_start
+    )
+
+
+@app.get(
+    "/api/papers/{paper_id}",
+    response_model=Paper
+)
+def get_paper(
+    paper_id: str,
     cur=Depends(database.get_db)
 ):
-    return database.get_paper_queried_multiple(cur, query, published_after, published_before, limit)
+    return database.get_paper_single(
+        cur,
+        paper_id
+    )
 
-@app.get("/api/papers/{paper_id}", response_model=Paper)
-def get_paper(paper_id: str, cur=Depends(database.get_db)):
-    return database.get_paper_single(cur, paper_id)
 
-#####user stuff##############################################
-#####user stuff##############################################
-#####user stuff##############################################
-#####user stuff##############################################
+################################################
+################## user stuff ##################
+################################################
 
 
 @app.post("/api/auth/register")
@@ -70,7 +126,10 @@ def register_user(
         )
 
 
-@app.post("/api/auth/login", response_model=Token)
+@app.post(
+    "/api/auth/login",
+    response_model=Token
+)
 def login_user(
     user: UserLogin,
     cur=Depends(database.get_db)
@@ -87,7 +146,9 @@ def login_user(
             detail="Incorrect username or password"
         )
 
-    access_token = authentication.create_access_token(user_id)
+    access_token = authentication.create_access_token(
+        user_id
+    )
 
     return {
         "access_token": access_token,
@@ -97,9 +158,13 @@ def login_user(
 
 @app.get("/api/auth/me")
 def get_current_user(
-    user_id: int = Depends(authentication.get_current_user)
+    user_id: int = Depends(
+        authentication.get_current_user
+    )
 ):
-    return {"user_id": user_id}
+    return {
+        "user_id": user_id
+    }
 
 
 @app.post("/api/users/interactions")
@@ -115,6 +180,7 @@ def record_interaction(
         interaction.interaction_type
     )
 
+
 @app.get("/api/users/interactions")
 def get_interactions(
     user=Depends(authentication.get_current_user),
@@ -125,6 +191,7 @@ def get_interactions(
         user
     )
 
+
 @app.get("/api/users/categories")
 def get_categories(
     user=Depends(authentication.get_current_user),
@@ -134,6 +201,7 @@ def get_categories(
         cur,
         user["user_id"]
     )
+
 
 @app.post("/api/users/categories")
 def add_category(
@@ -151,7 +219,10 @@ def add_category(
         "message": "Category added"
     }
 
-@app.delete("/api/users/categories/{category_id}")
+
+@app.delete(
+    "/api/users/categories/{category_id}"
+)
 def remove_category(
     category_id: int,
     user=Depends(authentication.get_current_user),
@@ -167,9 +238,11 @@ def remove_category(
         "message": "Category removed"
     }
 
+
 ################################################
-#########recommender stuff######################
+############### recommender stuff ##############
 ################################################
+
 
 @app.get("/api/recommendations")
 def get_recommendations(

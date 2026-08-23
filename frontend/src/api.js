@@ -1,8 +1,8 @@
-const API_URL = "http://127.0.0.1:8002";
+const API_URL = "http://127.0.0.1:8003";
 
 export async function getRecommendations(token) {
     const response = await fetch(
-        "http://127.0.0.1:8002/api/recommendations",
+        "http://127.0.0.1:8003/api/recommendations",
         {
             method: "GET",
             headers: {

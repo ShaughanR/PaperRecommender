@@ -15,7 +15,7 @@ function Register() {
 
         try {
             const response = await fetch(
-                "http://127.0.0.1:8002/api/auth/register",
+                "http://127.0.0.1:8003/api/auth/register",
                 {
                     method: "POST",
                     headers: {
@@ -43,34 +43,50 @@ function Register() {
     };
 
     return (
-        <div>
-            <h1>Create Account</h1>
+        <div className="auth-page">
 
-            <form onSubmit={handleRegister}>
-                <input
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(event) => setUsername(event.target.value)}
-                />
+            <div className="auth-card">
 
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(event) => setPassword(event.target.value)}
-                />
+                <h1>Create Account</h1>
 
-                <button type="submit">
-                    Create Account
+                <form
+                    className="auth-form"
+                    onSubmit={handleRegister}
+                >
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(event) => setUsername(event.target.value)}
+                    />
+
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(event) => setPassword(event.target.value)}
+                    />
+
+                    <button type="submit">
+                        Create Account
+                    </button>
+                </form>
+
+                {error && (
+                    <p className="auth-error">
+                        {error}
+                    </p>
+                )}
+
+                <button
+                    className="auth-secondary-button"
+                    onClick={() => navigate("/login")}
+                >
+                    Already have an account?
                 </button>
-            </form>
 
-            {error && <p>{error}</p>}
+            </div>
 
-            <button onClick={() => navigate("/login")}>
-                Already have an account?
-            </button>
         </div>
     );
 }
