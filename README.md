@@ -36,7 +36,38 @@ Frontend → FastAPI API → PostgreSQL
 - JWT
 
 ## Screenshots
-...
+
+### Home Page
+The main landing page allows users to search for research papers, filter by publication date, and control the number of results returned.
+
+<img src="screenshots/Homepage.png" alt="Homepage" width="900">
+
+### Logged-In Home Page
+Authenticated users can access personalized recommendations in addition to the standard search functionality.
+
+<img src="screenshots/LoggedInHomepage.png" alt="Logged In Homepage" width="900">
+
+### Search Results
+Users can search for papers by topic and filter results by publication date. Search results display paper metadata, categories, abstracts, and available actions.
+
+<img src="screenshots/ExampleSearch.png" alt="Example Search Results" width="900">
+
+### Personalized Recommendations
+The recommendation system ranks papers based on user interests and interaction history. Users can like, dislike, save, view, or open papers to provide additional feedback to the recommendation engine.
+
+<img src="screenshots/ExampleRecommendation.png" alt="Personalized Paper Recommendations" width="900">
+
+### Authentication
+
+#### Login
+Users can securely log in to access personalized features and recommendation history.
+
+<img src="screenshots/Login.png" alt="Login Page" width="750">
+
+#### Create Account
+New users can create an account to begin tracking interactions and receiving personalized recommendations.
+
+<img src="screenshots/CreateAccount.png" alt="Create Account Page" width="750">
 
 ## Running Locally
 ...
