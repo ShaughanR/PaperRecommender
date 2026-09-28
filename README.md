@@ -60,7 +60,7 @@ The recommendation system ranks papers based on user interests and interaction h
 ### Authentication
 
 #### Login
-Users can securely log in to access personalized features and recommendation history.
+Users can securely log in to access personalized features including recommendations.
 
 <img src="screenshots/Login.png" alt="Login Page" width="750">
 
@@ -69,8 +69,3 @@ New users can create an account to begin tracking interactions and receiving per
 
 <img src="screenshots/CreateAccount.png" alt="Create Account Page" width="750">
 
-## Running Locally
-...
-
-## Future Improvements
-...
