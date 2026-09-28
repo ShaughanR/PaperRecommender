@@ -1,12 +1,45 @@
-A work-in-progress research paper search and recommendation website built around the arXiv API. The system retrieves research papers from arXiv and stores them in a local PostgreSQL database to enable faster querying and reduce repeated API requests as the dataset grows.
+# Research Paper Recommendation Platform
 
-The application uses FastAPI as the backend to handle data transfer between PostgreSQL, the arXiv API, and the React frontend. It also supports authenticated user profiles and tracks user interactions with papers to support personalized recommendations.
+A full-stack research paper discovery and recommendation application built with Python, FastAPI, PostgreSQL, React, and scikit-learn.
 
-A save feature is currently being implemented, allowing users to curate and retrieve a personal collection of saved papers.
+## Overview
+The application ingests paper metadata from arXiv, stores normalized data in PostgreSQL, supports search and authentication, tracks user interactions, and generates personalized paper recommendations.
 
-Technologies:
-Python
-PostgreSQL
-FastAPI
-React
-arXiv API
+## Features
+- arXiv paper ingestion pipeline
+- PostgreSQL relational database
+- Full-text paper search
+- JWT authentication
+- Personalized recommendations
+- Likes, dislikes, saves, views, and PDF-open tracking
+- React frontend
+- FastAPI REST backend
+
+## Recommendation Approach
+The ranking system combines:
+- Category affinity
+- TF-IDF cosine similarity
+- Explicit user feedback
+- Implicit behavioral signals
+
+## Architecture
+Frontend → FastAPI API → PostgreSQL
+                     ↓
+              Recommendation Engine
+
+## Tech Stack
+- Python
+- FastAPI
+- PostgreSQL
+- React
+- scikit-learn
+- JWT
+
+## Screenshots
+...
+
+## Running Locally
+...
+
+## Future Improvements
+...
